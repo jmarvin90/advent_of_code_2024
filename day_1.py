@@ -37,17 +37,3 @@ df["similarity"] = df["left"] * df["count"]
 # ANSWER
 answer_2 = df["similarity"].sum()
 print(answer_2)
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
