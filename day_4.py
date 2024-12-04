@@ -103,7 +103,7 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
     start_points = grid.match(target_word.pop(len(target_word) // 2))
 
     # The total number of occurrences (the answer)
-    x_mas_total = 0
+    total = 0
 
     for start_point in start_points:                                # Try all the start points
         subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
@@ -126,9 +126,9 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
                 subtot += 1                                         # Increment our subtotal if it's valid
 
         if subtot > 1:
-            x_mas_total += 1                                        # Increment our grand total for each start point that is crossed twice
+            total += 1                                              # Increment our grand total for each start point that is crossed twice
 
-    return x_mas_total    
+    return total    
 
 
 # Answers
