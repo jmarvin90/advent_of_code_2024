@@ -14,8 +14,7 @@ with pathlib.Path("puzzle_2_input.txt").open("r") as infile:
 
 # How we check a valid report
 def report_is_valid(report: list) -> bool:
-    diffs = np.diff(report)
-    diffs_positive = [diff > 0 for diff in diffs]
+    diffs_positive = [diff > 0 for diff in np.diff(report)]
 
     # If numbers move in the same direction...
     # ...and are no more than 3/less than 1 away from each other
