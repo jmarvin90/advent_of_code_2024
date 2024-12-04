@@ -119,10 +119,10 @@ x_mas_total = 0
 
 for start_point in start_points:                                # Try all the start points
     subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
-    for direction in moves:                                          # Try each of the lines (\ and /)
+    for direction in moves:                                     # Try each of the lines (\ and /)
 
-        up = start_point + direction                                 # Get the diagonal start point 
-        down = start_point + (direction * -1)                        # Get the diagonal end point
+        up = start_point + direction                            # Get the diagonal start point 
+        down = start_point + (direction * -1)                   # Get the diagonal end point
 
         if not(up.is_valid(grid) and down.is_valid(grid)):      # If either of those points aren't valid...
             break                                               # ...move on to another start point
