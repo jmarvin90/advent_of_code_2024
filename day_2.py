@@ -41,14 +41,14 @@ def report_is_valid_tolerate_one_bad(report: list) -> bool:
     w_report = report[:] if report[0] < report[-1] else list(reversed(report))
 
     # Get the differences between levels to see which ones might be bad
-    level_is_valid = [1 <= diff <= 3 for diff in np.diff(w_report)]
+    diff_is_acceptable = [1 <= diff <= 3 for diff in np.diff(w_report)]
 
     # If there are more than two bad differences, we've had it
-    if level_is_valid.count(False) > 2:
+    if diff_is_acceptable.count(False) > 2:
         return False
 
     # Otherwise try again - removing indexes either side of the first bad diff
-    bad_level_index = level_is_valid.index(False)
+    bad_level_index = diff_is_acceptable.index(False)
 
     return (
         report_is_valid(
