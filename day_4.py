@@ -57,12 +57,7 @@ class Point:
             grid.width > self.x >= 0 and
             grid.height > self.y >= 0
         )
-
-
-# A word is valid if all the chars match the target at the same index
-def word_is_valid(word: list, target: list) -> bool:
-    return target[:len(word)] == word
-
+        
 
 # How to count occurrences of a word conventionally
 def count_words_in_grid(grid: Grid, target_word: list) -> int:
@@ -89,7 +84,7 @@ def count_words_in_grid(grid: Grid, target_word: list) -> int:
                 current_point = current_point + direction           # ...and keep moving in this direction
 
                 viable = (                                          # We can continue, so long as...
-                    word_is_valid(word, target_word) and            # The word we've got so far is valid, and...
+                    target_word[:len(word)] == word and             # The word we've got so far is valid, and...
                     current_point.is_valid(grid)                    # ...we can go in the same direction without exceeding limits
                 )
 
