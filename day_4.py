@@ -61,7 +61,7 @@ class Point:
 
 # A word is valid if all the chars match the target at the same index
 def word_is_valid(word: list, target: list) -> bool:
-    return all(target[index] == word[index] for index, char in enumerate(word))
+    return target[:len(word)] == word
 
 
 # How to count occurrences of a word conventionally
