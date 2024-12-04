@@ -99,6 +99,7 @@ def count_words_in_grid(grid: Grid, target_word: list) -> int:
     return total
 
 
+# How to count overlapping diagonal instances of a target word
 def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
     # Possible directions the target(s) could be oriented - diagonals only
     directions = [Point(-1, -1), Point(-1, 1)]
