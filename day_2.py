@@ -19,12 +19,10 @@ def report_is_valid(report: list) -> bool:
 
     # If numbers move in the same direction...
     # ...and are no more than 3/less than 1 away from each other
-    if (
+    return (
         min(diffs_positive) == max(diffs_positive) and
         all(3 >= abs(num) >= 1 for num in diffs)
-    ):
-        return True
-    return False
+    )
 
 # ANSWER
 safe_reports = sum(1 if report_is_valid(report) else 0 for report in reports)
