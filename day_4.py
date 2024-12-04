@@ -132,7 +132,7 @@ for start_point in start_points:                                # Try all the st
         if not(
             up.is_valid(grid) and down.is_valid(grid)           # If either of those points arent' valid...
         ):
-            continue                                            # ...move on to another start point
+            break                                               # ...move on to another start point
 
         up_char = grid.at(start_point + move)                   # Get the character from the diagonal start
         down_char = grid.at(start_point + (move * -1))          # Get the character form the diagonal end
