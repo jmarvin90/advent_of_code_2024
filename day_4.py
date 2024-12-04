@@ -66,7 +66,7 @@ grid = Grid("puzzle_4_input.txt")
 # ---- Day 4, PT 1---- #
 
 # Possible directions the target could be oriented 
-moves = [
+directions = [
     Point(*move)
     for move in itertools.product([-1, 0, 1], repeat=2) 
     if move != (0, 0)
@@ -86,7 +86,7 @@ def word_is_valid(word: list, target: list) -> bool:
 total = 0
 
 for start_point in start_points:                                # Try all the start points
-    for direction in moves:                                     # Try all directions from the start point
+    for direction in directions:                                     # Try all directions from the start point
         word = []                                               # Keep track of the word we've got so far...
         viable = True                                           # ...and whether it's viable to continue in this direction...
         current_point = start_point                             # ...and how far along we've travelled
@@ -109,7 +109,7 @@ print(total)
 # ---- Day 4, PT 2---- #
 
 # Possible directions the target(s) could be oriented - diagonals only
-moves = [Point(-1, -1), Point(-1, 1)]
+directions = [Point(-1, -1), Point(-1, 1)]
 
 # We're trying to find the centre of the 'X' - the char. 'A'
 start_points = grid.match("A")
@@ -119,7 +119,7 @@ x_mas_total = 0
 
 for start_point in start_points:                                # Try all the start points
     subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
-    for direction in moves:                                     # Try each of the lines (\ and /)
+    for direction in directions:                                     # Try each of the lines (\ and /)
 
         up = start_point + direction                            # Get the diagonal start point 
         down = start_point + (direction * -1)                   # Get the diagonal end point
