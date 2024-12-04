@@ -28,6 +28,14 @@ class Grid:
     def at(self, point: Point) -> str:
         return self.grid[point.y][point.x]
 
+    def match(self, value: str) -> list:
+        return [
+            Point(x, y)
+            for y, row in enumerate(self.grid)
+            for x, val in enumerate(row)
+            if val == value
+        ]
+
 
 # Some helpful point functionality
 class Point:
@@ -50,9 +58,6 @@ class Point:
             grid.height > self.y >= 0
         )
 
-    def grid_val(self, grid: Grid) -> str:
-        return grid.at(self)
-
 
 # Get the input grid
 grid = Grid("puzzle_4_input.txt")
@@ -71,12 +76,7 @@ moves = [
 target = ["X", "M", "A", "S"]
 
 # All the places the target could start from
-start_points = [
-    Point(x, y)
-    for y, row in enumerate(grid.grid)
-    for x, col in enumerate(row)
-    if grid.at(Point(x, y)) == target[0]
-]
+start_points = grid.match("X")
 
 # A word is valid if all the chars match the target at the same indexes
 def word_is_valid(word: list, target: list) -> bool:
@@ -112,12 +112,7 @@ print(total)
 moves = [Point(-1, -1), Point(-1, 1)]
 
 # We're trying to find the centre of the 'X' - the char. 'A'
-start_points = [
-    Point(x, y)
-    for y, row in enumerate(grid.grid)
-    for x, col in enumerate(row)
-    if grid.at(Point(x, y)) == "A"
-]
+start_points = grid.match("A")
 
 # The total number of occurrences (the answer)
 x_mas_total = 0
@@ -134,8 +129,8 @@ for start_point in start_points:                                # Try all the st
         ):
             break                                               # ...move on to another start point
 
-        up_char = grid.at(start_point + move)                   # Get the character from the diagonal start
-        down_char = grid.at(start_point + (move * -1))          # Get the character form the diagonal end
+        up_char = grid.at(up)                                   # Get the character from the diagonal start
+        down_char = grid.at(down)                               # Get the character form the diagonal end
 
         if (                                                    # The diagonal is valid if...
             up_char in ["M", "S"] and                           # The start of the diagonal is "M" or "S"; and
