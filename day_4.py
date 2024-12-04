@@ -59,85 +59,83 @@ class Point:
         )
 
 
-# Get the input grid
-grid = Grid("puzzle_4_input.txt")
-
-
-# ---- Day 4, PT 1---- #
-
-# Possible directions the target could be oriented 
-directions = [
-    Point(*move)
-    for move in itertools.product([-1, 0, 1], repeat=2) 
-    if move != (0, 0)
-]
-
-# The target we're looking for
-target = ["X", "M", "A", "S"]
-
-# All the places the target could start from
-start_points = grid.match("X")
-
-# A word is valid if all the chars match the target at the same indexes
+# A word is valid if all the chars match the target at the same index
 def word_is_valid(word: list, target: list) -> bool:
     return all(target[index] == word[index] for index, char in enumerate(word))
 
-# The number of occurrences (the answer)
-total = 0
 
-for start_point in start_points:                                # Try all the start points
-    for direction in directions:                                     # Try all directions from the start point
-        word = []                                               # Keep track of the word we've got so far...
-        viable = True                                           # ...and whether it's viable to continue in this direction...
-        current_point = start_point                             # ...and how far along we've travelled
-        while viable and len(word) < len(target):               # While the word we're forming in this direciton is valid
-            word += grid.at(current_point)                      # Add the next letter to the word...
-            current_point = current_point + direction           # ...and keep moving in this direction
+# How to count occurrences of a word conventionally
+def count_words_in_grid(grid: Grid, target_word: list) -> int:
+    # Possible directions the target could be oriented 
+    directions = [
+        Point(*move)
+        for move in itertools.product([-1, 0, 1], repeat=2) 
+        if move != (0, 0)
+    ]
 
-            viable = (                                          # We can continue, so long as...
-                word_is_valid(word, target) and                 # The word we've got so far is valid, and...
-                current_point.is_valid(grid)                    # ...we can go in the same direction without exceeding limits
-            )
+    # The places the target could start from (the first letter of the target)
+    start_points = grid.match(target_word[0])
 
-            if word == target:                                  # If we've found our target...
-                total += 1                                      # ...increment our total
+    # The number of occurrences (the answer)
+    total = 0
 
-print(total)
+    for start_point in start_points:                                # Try all the start points
+        for direction in directions:                                # Try all directions from the start point
+            word = []                                               # Keep track of the word we've got so far...
+            viable = True                                           # ...and whether it's viable to continue in this direction...
+            current_point = start_point                             # ...and how far along we've travelled
+            while viable and len(word) < len(target_word):          # While the word we're forming in this direciton is valid
+                word += grid.at(current_point)                      # Add the next letter to the word...
+                current_point = current_point + direction           # ...and keep moving in this direction
+
+                viable = (                                          # We can continue, so long as...
+                    word_is_valid(word, target_word) and            # The word we've got so far is valid, and...
+                    current_point.is_valid(grid)                    # ...we can go in the same direction without exceeding limits
+                )
+
+                if word == target_word:                             # If we've found our target...
+                    total += 1                                      # ...increment our total
+
+    return total
 
 
+def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
+    # Possible directions the target(s) could be oriented - diagonals only
+    directions = [Point(-1, -1), Point(-1, 1)]
 
-# ---- Day 4, PT 2---- #
+    # We're trying to find the centre of the 'X' - the middle char of the target word
+    start_points = grid.match(target_word.pop(len(target_word) // 2))
 
-# Possible directions the target(s) could be oriented - diagonals only
-directions = [Point(-1, -1), Point(-1, 1)]
+    # The total number of occurrences (the answer)
+    x_mas_total = 0
 
-# We're trying to find the centre of the 'X' - the char. 'A'
-start_points = grid.match("A")
+    for start_point in start_points:                                # Try all the start points
+        subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
+        for direction in directions:                                # Try each of the lines (\ and /)
 
-# The total number of occurrences (the answer)
-x_mas_total = 0
+            up = start_point + direction                            # Get the diagonal start point 
+            down = start_point + (direction * -1)                   # Get the diagonal end point
 
-for start_point in start_points:                                # Try all the start points
-    subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
-    for direction in directions:                                     # Try each of the lines (\ and /)
+            if not(up.is_valid(grid) and down.is_valid(grid)):      # If either of those points aren't valid...
+                break                                               # ...move on to another start point
 
-        up = start_point + direction                            # Get the diagonal start point 
-        down = start_point + (direction * -1)                   # Get the diagonal end point
+            up_char = grid.at(up)                                   # Get the character from the diagonal start
+            down_char = grid.at(down)                               # Get the character form the diagonal end
 
-        if not(up.is_valid(grid) and down.is_valid(grid)):      # If either of those points aren't valid...
-            break                                               # ...move on to another start point
+            if (                                                    # The diagonal is valid if...
+                up_char in target_word and                          # The start of the diagonal is "M" or "S"; and
+                down_char in target_word and                        # The end of the diagonal is "M" or "S"; and
+                up_char != down_char                                # The start and end of the diagonal aren't the same
+            ):
+                subtot += 1                                         # Increment our subtotal if it's valid
 
-        up_char = grid.at(up)                                   # Get the character from the diagonal start
-        down_char = grid.at(down)                               # Get the character form the diagonal end
+        if subtot > 1:
+            x_mas_total += 1                                        # Increment our grand total for each start point that is crossed twice
 
-        if (                                                    # The diagonal is valid if...
-            up_char in ["M", "S"] and                           # The start of the diagonal is "M" or "S"; and
-            down_char in ["M", "S"] and                         # The end of the diagonal is "M" or "S"; and
-            up_char != down_char                                # The start and end of the diagonal aren't the same
-        ):
-            subtot += 1                                         # Increment our subtotal if it's valid
+    return x_mas_total    
 
-    if subtot > 1:
-        x_mas_total += 1                                        # Increment our grand total for each start point that is crossed twice
 
-print(x_mas_total)
+# Answers
+grid = Grid("puzzle_4_input.txt")
+print(count_words_in_grid(grid=grid, target_word=["X","M","A","S"]))
+print(count_crossing_diagonals(grid=grid, target_word=["M","A","S"]))
