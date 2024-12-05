@@ -93,7 +93,7 @@ def count_words_in_grid(grid: Grid, target_word: list) -> int:
 
             while (                                                 
                 word == target_word[:len(word)] and                 # While the word we have is still correct...
-                len(word) < len(target_word)                        # ...and we're not found the full word
+                len(word) < len(target_word)                        # ...and we've not found the full word
             ):
                 current_point += direction                          # Keep moving in this direction...
                 word += grid.at(current_point)                      # ...adding a letter to the word as we go
