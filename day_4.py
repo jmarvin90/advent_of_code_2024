@@ -137,7 +137,6 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
 
         if subtot > 1:
             total += 1                                              # Increment our grand total for each start point that is crossed twice
-            total += 1                                              # Increment our grand total for each start point that is crossed twice
 
     return total    
     return total    
