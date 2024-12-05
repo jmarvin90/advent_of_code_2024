@@ -3,8 +3,8 @@ import pathlib
 import itertools
 
 
-# Some helpful grid functionality
 class Grid:
+    """Some helpful grid functionality."""
     def __init__(self, input_file: str):
         self.input_file = input_file
         self.grid = Grid.from_input_file(self.input_file)
@@ -37,8 +37,8 @@ class Grid:
         ]
 
 
-# Some helpful point functionality
 class Point:
+    """Some helpful point functionality."""
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
@@ -57,53 +57,66 @@ class Point:
             grid.width > self.x >= 0 and
             grid.height > self.y >= 0
         )
+    
+    def is_on_boundary(self, grid: Grid) -> bool:
+        return (
+            (self.x == 0 or self.x == grid.width -1) or
+            (self.y == 0 or self.y == grid.height -1)
+        )
         
 
-# How to count occurrences of a word conventionally
 def count_words_in_grid(grid: Grid, target_word: list) -> int:
-    # Possible directions the target could be oriented 
-    directions = [
+    """Count the occurrences of the target word in the input grid."""
+    directions = [                                                  # Possible directions the target could be oriented 
         Point(*move)
         for move in itertools.product([-1, 0, 1], repeat=2) 
         if move != (0, 0)
     ]
 
-    # The places the target could start from (the first letter of the target)
-    start_points = grid.match(target_word[0])
+    start_points = grid.match(target_word[0])                       # The places the target could start from (the first letter of the target)
 
-    # The number of occurrences (the answer)
-    total = 0
+    total = 0                                                       # The number of occurrences (the answer)
 
     for start_point in start_points:                                # Try all the start points
-        for direction in directions:                                # Try all directions from the start point
-            word = []                                               # Keep track of the word we've got so far...
-            viable = True                                           # ...and whether it's viable to continue in this direction...
-            current_point = start_point                             # ...and how far along we've travelled
-            while viable and len(word) < len(target_word):          # While the word we're forming in this direciton is valid
-                word += grid.at(current_point)                      # Add the next letter to the word...
-                current_point = current_point + direction           # ...and keep moving in this direction
+        for direction in directions:                                # Try all directions from the start point  
 
-                viable = (                                          # We can continue, so long as...
-                    target_word[:len(word)] == word and             # The word we've got so far is valid, and...
-                    current_point.is_valid(grid)                    # ...we can go in the same direction without exceeding limits
-                )
+            final_point = (                                         # The point at the end of the word in this direction
+                start_point + 
+                (direction * (len(target_word) -1))
+            )
 
-                if word == target_word:                             # If we've found our target...
-                    total += 1                                      # ...increment our total
+            if not final_point.is_valid(grid):                      # If that point is 'off-grid'...
+                continue                                            # ...don't continue with this direction
 
+            current_point = start_point                             
+            word = [grid.at(current_point)]
+
+            while (                                                 
+                word == target_word[:len(word)] and                 # While the word we have is still correct...
+                len(word) < len(target_word)                        # ...and we're not found the full word
+            ):
+                current_point += direction                          # Keep moving in this direction...
+                word += grid.at(current_point)                      # ...adding a letter to the word as we go
+
+                if word == target_word:
+                    total += 1
     return total
 
 
 # How to count overlapping diagonal instances of a target word
 def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
+    """Count times a target word overlaps in an 'X' pattern in an input grid."""
     # Possible directions the target(s) could be oriented - diagonals only
     directions = [Point(-1, -1), Point(-1, 1)]
 
     # We're trying to find the centre of the 'X' - the middle char of the target word
-    start_points = grid.match(target_word.pop(len(target_word) // 2))
+    start_points = [
+        point
+        for point in grid.match(target_word.pop(len(target_word) // 2))
+        if not point.is_on_boundary(grid)
+    ]
 
-    # The total number of occurrences (the answer)
-    x_mas_total = 0
+    total = 0                                                       # The total number of occurrences (the answer)
 
     for start_point in start_points:                                # Try all the start points
         subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
@@ -111,9 +124,6 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
 
             up = start_point + direction                            # Get the diagonal start point 
             down = start_point + (direction * -1)                   # Get the diagonal end point
-
-            if not(up.is_valid(grid) and down.is_valid(grid)):      # If either of those points aren't valid...
-                break                                               # ...move on to another start point
 
             up_char = grid.at(up)                                   # Get the character from the diagonal start
             down_char = grid.at(down)                               # Get the character form the diagonal end
@@ -126,9 +136,9 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
                 subtot += 1                                         # Increment our subtotal if it's valid
 
         if subtot > 1:
-            x_mas_total += 1                                        # Increment our grand total for each start point that is crossed twice
+            total += 1                                              # Increment our grand total for each start point that is crossed twice
 
-    return x_mas_total    
+    return total    
 
 
 # Answers
