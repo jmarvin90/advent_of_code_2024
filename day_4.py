@@ -107,12 +107,12 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
     """Count times a target word overlaps in an 'X' pattern in an input grid."""
     directions = [Point(-1, -1), Point(-1, 1)]                      # Possible directions the target(s) could be oriented - diagonals only
 
-    start_points = [                                                # We're trying to find the centre of the 'X' - the middle char of the target word
+    start_points = [                                                # We're trying to find the centre of the 'X'...
         point
         for point in grid.match(
-            target_word.pop(len(target_word) // 2)
+            target_word.pop(len(target_word) // 2)                  # ...the middle char of the target word...
         )
-        if not point.is_on_boundary(grid)                           # But only if that char is not on the edge of the grid
+        if not point.is_on_boundary(grid)                           # ...but only if that char is not on the edge of the grid
     ]
 
     total = 0                                                       # The total number of occurrences (the answer)
@@ -128,9 +128,9 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
             down_char = grid.at(down)                               # Get the character form the diagonal end
 
             if (                                                    # The diagonal is valid if...
-                up_char in target_word and                          # The start of the diagonal is "M" or "S"; and
-                down_char in target_word and                        # The end of the diagonal is "M" or "S"; and
-                up_char != down_char                                # The start and end of the diagonal aren't the same
+                up_char in target_word and                          # ...the start of the diagonal is in the target word; and...
+                down_char in target_word and                        # ...the end of the diagonal is in the target word, and..
+                up_char != down_char                                # ...the start and end of the diagonal aren't the same
             ):
                 subtot += 1                                         # Increment our subtotal if it's valid
 
@@ -138,8 +138,6 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
             total += 1                                              # Increment our grand total for each start point that is crossed twice
 
     return total    
-    return total    
-
 
 # Answers
 grid = Grid("puzzle_4_input.txt")
