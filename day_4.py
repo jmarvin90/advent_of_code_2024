@@ -103,17 +103,16 @@ def count_words_in_grid(grid: Grid, target_word: list) -> int:
     return total
 
 
-# How to count overlapping diagonal instances of a target word
 def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
     """Count times a target word overlaps in an 'X' pattern in an input grid."""
-    # Possible directions the target(s) could be oriented - diagonals only
-    directions = [Point(-1, -1), Point(-1, 1)]
+    directions = [Point(-1, -1), Point(-1, 1)]                      # Possible directions the target(s) could be oriented - diagonals only
 
-    # We're trying to find the centre of the 'X' - the middle char of the target word
-    start_points = [
+    start_points = [                                                # We're trying to find the centre of the 'X' - the middle char of the target word
         point
-        for point in grid.match(target_word.pop(len(target_word) // 2))
-        if not point.is_on_boundary(grid)
+        for point in grid.match(
+            target_word.pop(len(target_word) // 2)
+        )
+        if not point.is_on_boundary(grid)                           # But only if that char is not on the edge of the grid
     ]
 
     total = 0                                                       # The total number of occurrences (the answer)
