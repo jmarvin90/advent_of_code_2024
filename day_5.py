@@ -21,7 +21,7 @@ def get_rules_and_sequences_from_file(input_file: str) -> tuple:
 
     return (rules, sequences)
 
-def get_node_matrix(rules: list) -> list:
+def get_node_matrix(rules: list) -> pd.DataFrame:
     """Create a matrix from the ruleset."""
     unique_nodes = set([node for rule in rules for node in rule])
     my_df = pd.DataFrame(index=list(unique_nodes), columns=list(unique_nodes))
