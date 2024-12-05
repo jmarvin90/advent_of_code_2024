@@ -80,7 +80,7 @@ def count_words_in_grid(grid: Grid, target_word: list) -> int:
     for start_point in start_points:                                # Try all the start points
         for direction in directions:                                # Try all directions from the start point  
 
-            final_point = (                                         # The point at the end of the word in this direction
+            final_point = (                                         # Get the point at the end of the word in this direction
                 start_point + 
                 (direction * (len(target_word) -1))
             )
