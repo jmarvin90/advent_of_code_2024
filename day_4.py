@@ -121,11 +121,8 @@ def count_crossing_diagonals(grid: Grid, target_word: list) -> int:
         subtot = 0                                                  # Keep track of how many lines crossing our start point are valid
         for direction in directions:                                # Try each of the lines (\ and /)
 
-            up = start_point + direction                            # Get the diagonal start point 
-            down = start_point + (direction * -1)                   # Get the diagonal end point
-
-            up_char = grid.at(up)                                   # Get the character from the diagonal start
-            down_char = grid.at(down)                               # Get the character form the diagonal end
+            up_char = grid.at(start_point + direction)              # Get the character from the diagonal start
+            down_char = grid.at(start_point + (direction * -1))     # Get the character form the diagonal end
 
             if (                                                    # The diagonal is valid if...
                 up_char in target_word and                          # ...the start of the diagonal is in the target word; and...
