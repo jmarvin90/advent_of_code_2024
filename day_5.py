@@ -56,5 +56,25 @@ for sequence in sequences:
     if sequence_in_correct_order(sequence, node_order):
         total += get_middle_page(sequence)
 
+# PT 1 - Answer
 print(total)
+
+
+bad_sequence_total = 0
+
+bad_sequences = [
+    sequence for sequence in sequences
+    if not sequence_in_correct_order(
+        sequence, get_node_order(node_matrix, sequence)
+    )
+]
+
+for sequence in bad_sequences:
+    node_order = get_node_order(node_matrix, sequence)
+    bad_sequence_total += get_middle_page(node_order)
+
+# PT 2 - Answer
+print(bad_sequence_total)
+
+
 
