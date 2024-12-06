@@ -2,7 +2,7 @@
 
 import time
 import itertools
-from grid import Point, Grid, Line, Square
+from grid import Point, Grid
 
 my_grid = Grid("puzzle_6_input_2.txt")
 
@@ -54,6 +54,13 @@ def get_path(grid: Grid, current_pos: Point, direction: Point) -> list:
         current_pos = next_pos
     return path
 
+"""
+    A point on the grid "closes a loop" if:
+    - we come to a point whose right adjacent point has been traversed already, and
+    - we turn right onto that already traversed point, and
+    - the subsequent path terminates in an obstacle
+"""
+
 
 def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
     """Mark patrol paths on a grid from a specified start point."""
@@ -64,7 +71,6 @@ def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
     path = get_path(grid, current_pos, current_direction["vector"])
 
     while path:
-        geometry = []
 
         next_pos = path.pop(0)
         next_direction = get_next_direction(current_direction["char"])
