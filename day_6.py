@@ -4,7 +4,7 @@ import time
 import itertools
 from grid import Point, Grid
 
-my_grid = Grid("puzzle_6_input_2.txt")
+my_grid = Grid("puzzle_6_input.txt")
 
 directions = [
     {
@@ -54,13 +54,13 @@ def get_path(grid: Grid, current_pos: Point, direction: Point) -> list:
         current_pos = next_pos
     return path
 
+
 """
     A point on the grid "closes a loop" if:
     - we come to a point whose right adjacent point has been traversed already, and
     - we turn right onto that already traversed point, and
     - the subsequent path terminates in an obstacle
 """
-
 
 def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
     """Mark patrol paths on a grid from a specified start point."""
@@ -69,6 +69,7 @@ def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
     current_direction = direction
 
     path = get_path(grid, current_pos, current_direction["vector"])
+    loop_closure_points = []
 
     while path:
 
@@ -78,10 +79,23 @@ def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
         # Change directions if we're obstructed
         if grid.at(next_pos) in obstructions:
             current_direction = next_direction
-            path = get_path(grid, current_pos, current_direction["vector"])
+            path = get_path(grid, current_pos, current_direction["vector"])[1:]
+            grid.set(current_pos, "+")
             continue
         
+        # Move along the path
         current_pos = next_pos
+
+        # Speculate about turning right and following that path
+        next_right_path = get_path(grid, current_pos, next_direction["vector"])
+
+        # If we'd hit an obstruction we've hit from the same direciton before...
+        # ...we've encountered a 'loop closure' point
+        if (
+            grid.at(next_right_path[-1]) in obstructions and
+            grid.at(next_right_path[-2]) in [next_direction["path_char"], "+"]
+        ):
+            loop_closure_points.append(current_pos + (current_direction["vector"]))
 
         # Leave a breadcrumb indicating direction if we've not been here before
         if grid.at(current_pos) not in ["-", "|", "+"]:
@@ -94,10 +108,15 @@ def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
         ):
             grid.set(current_pos, "+")
 
-        print(grid, end="\n\n")
-        time.sleep(0.05)
-    return grid
+    return grid, loop_closure_points
 
 start_direction = directions[0]
 start_point = my_grid.match_one(start_direction["char"])
-output_grid = patrol(my_grid, start_point, start_direction)
+
+output_grid, loop_closure_points = patrol(
+    my_grid, start_point, start_direction
+)
+
+print(output_grid)
+print(output_grid.count_any(["+", "-", "|"]))       # Answer - PT 1
+print(len(loop_closure_points))                     # Answer - PT 2
