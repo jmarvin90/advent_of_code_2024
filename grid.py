@@ -1,11 +1,14 @@
 from __future__ import annotations
+import itertools
 import pathlib
+import math
 
 class Grid:
     """Some helpful grid functionality."""
-    def __init__(self, input_file: str):
+    def __init__(self, input_file: str, obstructions: list=[]):
         self.input_file = input_file
         self.grid = Grid.from_input_file(self.input_file)
+        self.obstructions=[]
 
     def __str__(self) -> str:
         return "\n".join("".join(row) for row in self.grid)
@@ -65,7 +68,7 @@ class Point:
         self.y = y
 
     def __str__(self) -> str:
-        return f"{self.x}, {self.y}"
+        return f"{self.x},{self.y}"
     
     def __add__(self, point: Point) -> Point:
         return Point(self.x + point.x, self.y + point.y)

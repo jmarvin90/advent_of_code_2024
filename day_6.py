@@ -1,7 +1,8 @@
 
 
 import time
-from grid import Point, Grid
+import itertools
+from grid import Point, Grid, Line, Square
 
 my_grid = Grid("puzzle_6_input_2.txt")
 
@@ -37,45 +38,60 @@ def get_next_direction(current_char: str) -> Point:
             return directions[(index + 1) % len(directions)]
 
 
-"""
- - If instead of carrying on the current path, we took the next direction...
- - ...and there is an obstruction along the path in the next direction...
- - ...and we have already visited a tile along the path in the next direction,
-      between the current position and the obstruction
-"""
+def get_path(grid: Grid, current_pos: Point, direction: Point) -> list:
+    """Return a path ending at the next obstacle/end of the grid."""
+    path = []
+    while True:        
+        path.append(current_pos)
+        next_pos = current_pos + direction
 
-def patrol(grid: Grid, start_point: Point) -> Grid:
+        if (
+            grid.at(current_pos) in obstructions or
+            not next_pos.is_valid(grid)
+        ):
+            break
+
+        current_pos = next_pos
+    return path
+
+
+def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
+    """Mark patrol paths on a grid from a specified start point."""
 
     current_pos = start_point
+    current_direction = direction
 
-    for direction in directions:
-        if direction["char"] == grid.at(current_pos):
-            current_direction = direction
+    path = get_path(grid, current_pos, current_direction["vector"])
 
-    while True:
-        next_pos = current_pos + current_direction["vector"]
+    while path:
+        geometry = []
 
+        next_pos = path.pop(0)
+        next_direction = get_next_direction(current_direction["char"])
+
+        # Change directions if we're obstructed
+        if grid.at(next_pos) in obstructions:
+            current_direction = next_direction
+            path = get_path(grid, current_pos, current_direction["vector"])
+            continue
+        
+        current_pos = next_pos
+
+        # Leave a breadcrumb indicating direction if we've not been here before
         if grid.at(current_pos) not in ["-", "|", "+"]:
             grid.set(current_pos, current_direction["path_char"])
 
+        # Use a special breadcrumb if we've crossed the point in many directions
         if (
             grid.at(current_pos) in ["-", "|"] and 
             grid.at(current_pos) != current_direction["path_char"]
         ):
             grid.set(current_pos, "+")
 
-        if not next_pos.is_valid(grid):
-            break
-
-        if grid.at(next_pos) in obstructions:
-            current_direction = get_next_direction(current_direction["char"])
-            continue
-
-        current_pos = next_pos
-
-    print(grid)
+        print(grid, end="\n\n")
+        time.sleep(0.05)
     return grid
 
-output_grid = patrol(my_grid, my_grid.match_one("^"))
-move_count = output_grid.count_any(["+", "-", "|"])
-print(move_count)
+start_direction = directions[0]
+start_point = my_grid.match_one(start_direction["char"])
+output_grid = patrol(my_grid, start_point, start_direction)
