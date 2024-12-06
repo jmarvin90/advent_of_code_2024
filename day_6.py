@@ -57,9 +57,10 @@ def get_path(grid: Grid, current_pos: Point, direction: Point) -> list:
 
 """
     A point on the grid "closes a loop" if:
-    - we come to a point whose right adjacent point has been traversed already, and
-    - we turn right onto that already traversed point, and
-    - the subsequent path terminates in an obstacle
+    - we come to a point at which, were we to turn right...
+    - ...the path we would traverse from that point would include a step we've
+         already traversed before...
+    - ...from the same direction that we're traversing this time...?
 """
 
 def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
