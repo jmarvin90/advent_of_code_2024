@@ -91,9 +91,17 @@ def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
 
         # If we'd hit an obstruction we've hit from the same direciton before...
         # ...we've encountered a 'loop closure' point
+
+        """
+        Need to update this logic.
+        I suppose theoretically we don't need to have hit this obstacle from 
+        this direction before - so long as hitting this obstacle puts us on
+        course to loop back to a tile we've already traversed (in the same)
+        direction as before?).
+        """
         if (
             grid.at(next_right_path[-1]) in obstructions and
-            grid.at(next_right_path[-2]) in [next_direction["path_char"], "+"]
+            grid.at(next_right_path[-2]) in ["|", "-", "+"]
         ):
             loop_closure_points.append(current_pos + (current_direction["vector"]))
 
@@ -117,6 +125,5 @@ output_grid, loop_closure_points = patrol(
     my_grid, start_point, start_direction
 )
 
-print(output_grid)
 print(output_grid.count_any(["+", "-", "|"]))       # Answer - PT 1
 print(len(loop_closure_points))                     # Answer - PT 2
