@@ -67,6 +67,12 @@ class Point:
         self.x = x
         self.y = y
 
+    def __hash__(self) -> str:
+        return hash(self.__str__())
+
+    def __eq__(self, comparator: Point) -> bool:
+        return self.x == comparator.x and self.y == comparator.y
+
     def __str__(self) -> str:
         return f"{self.x},{self.y}"
     
@@ -86,4 +92,15 @@ class Point:
         return (
             (self.x == 0 or self.x == grid.width -1) or
             (self.y == 0 or self.y == grid.height -1)
+        )
+
+class Line:
+    def __init__(self, start_point: Point, end_point: Point):
+        self.start_point = start_point
+        self.end_point = end_point
+
+    def __eq__(self, comparator: Line) -> bool:
+        return (
+            self.comparator.start_point == self.start_point and
+            self.comparator.end_point == self.end_point
         )

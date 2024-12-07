@@ -4,54 +4,50 @@ import time
 import itertools
 from grid import Point, Grid
 
-my_grid = Grid("puzzle_6_input.txt")
+my_grid = Grid("puzzle_6_input_2.txt")
 
 directions = [
-    {
-        "char": "^", 
-        "vector": Point(0, -1),
-        "path_char": "|"
-    },
-    {
-        "char": ">", 
-        "vector": Point(1, 0),
-        "path_char": "-"
-    },
-    {
-        "char": "V", 
-        "vector": Point(0, 1),
-        "path_char": "|"
-    },
-    {
-        "char": "<", 
-        "vector": Point(-1, 0),
-        "path_char": "-"
-    }
+    Point(0, -1),
+    Point(1, 0),
+    Point(0, 1),
+    Point(-1, 0) 
 ]
 
 obstructions = ["#"]
 
-
-def get_next_direction(current_char: str) -> Point:
+def get_next_direction(current_direction: Point) -> Point:
     for index, direction in enumerate(directions):
-        if direction["char"] == current_char:
+        if direction == current_direction:
             return directions[(index + 1) % len(directions)]
 
 
-def get_path(grid: Grid, current_pos: Point, direction: Point) -> list:
-    """Return a path ending at the next obstacle/end of the grid."""
-    path = []
-    while True:        
-        path.append(current_pos)
-        next_pos = current_pos + direction
+def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
 
-        if (
-            grid.at(current_pos) in obstructions or
-            not next_pos.is_valid(grid)
-        ):
+    current_point = start_point
+    path=[start_point]
+
+    while True:
+    
+        # The next point we want to go to
+        next_point = current_point + direction
+
+        # If that point would exit the map
+        if not next_point.is_valid(grid):
             break
 
-        current_pos = next_pos
+        # If that point is an obstacle
+        if grid.at(next_point) in obstructions:
+            direction = get_next_direction(direction)
+            continue
+
+        # If we've been at that point more than twice[?]
+        if (path.count(next_point) == 2):
+            print(f"Been here ({next_point}) too many times, mate.")
+            break
+
+        current_point = next_point
+        path.append(current_point)
+
     return path
 
 
@@ -63,68 +59,11 @@ def get_path(grid: Grid, current_pos: Point, direction: Point) -> list:
     - ...from the same direction that we're traversing this time...?
 """
 
-def patrol(grid: Grid, start_point: Point, direction: dict) -> Grid:
+def patrol(grid: Grid, start_point: Point, direction: Point) -> Grid:
     """Mark patrol paths on a grid from a specified start point."""
 
-    current_pos = start_point
-    current_direction = direction
 
-    path = get_path(grid, current_pos, current_direction["vector"])
-    loop_closure_points = []
+output_path = traverse_from(my_grid.match_one("^"), Point(0, -1), my_grid)
 
-    while path:
 
-        next_pos = path.pop(0)
-        next_direction = get_next_direction(current_direction["char"])
-
-        # Change directions if we're obstructed
-        if grid.at(next_pos) in obstructions:
-            current_direction = next_direction
-            path = get_path(grid, current_pos, current_direction["vector"])[1:]
-            grid.set(current_pos, "+")
-            continue
-        
-        # Move along the path
-        current_pos = next_pos
-
-        # Speculate about turning right and following that path
-        next_right_path = get_path(grid, current_pos, next_direction["vector"])
-
-        # If we'd hit an obstruction we've hit from the same direciton before...
-        # ...we've encountered a 'loop closure' point
-
-        """
-        Need to update this logic.
-        I suppose theoretically we don't need to have hit this obstacle from 
-        this direction before - so long as hitting this obstacle puts us on
-        course to loop back to a tile we've already traversed (in the same)
-        direction as before?).
-        """
-        if (
-            grid.at(next_right_path[-1]) in obstructions and
-            grid.at(next_right_path[-2]) in ["|", "-", "+"]
-        ):
-            loop_closure_points.append(current_pos + (current_direction["vector"]))
-
-        # Leave a breadcrumb indicating direction if we've not been here before
-        if grid.at(current_pos) not in ["-", "|", "+"]:
-            grid.set(current_pos, current_direction["path_char"])
-
-        # Use a special breadcrumb if we've crossed the point in many directions
-        if (
-            grid.at(current_pos) in ["-", "|"] and 
-            grid.at(current_pos) != current_direction["path_char"]
-        ):
-            grid.set(current_pos, "+")
-
-    return grid, loop_closure_points
-
-start_direction = directions[0]
-start_point = my_grid.match_one(start_direction["char"])
-
-output_grid, loop_closure_points = patrol(
-    my_grid, start_point, start_direction
-)
-
-print(output_grid.count_any(["+", "-", "|"]))       # Answer - PT 1
-print(len(loop_closure_points))                     # Answer - PT 2
+print(len(set(output_path)))            # PT 1 - Answer
