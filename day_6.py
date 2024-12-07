@@ -59,9 +59,6 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
     - ...from the same direction that we're traversing this time...?
 """
 
-def patrol(grid: Grid, start_point: Point, direction: Point) -> Grid:
-    """Mark patrol paths on a grid from a specified start point."""
-
 
 output_path = traverse_from(my_grid.match_one("^"), Point(0, -1), my_grid)
 
