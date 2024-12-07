@@ -79,6 +79,9 @@ class Point:
     def __add__(self, point: Point) -> Point:
         return Point(self.x + point.x, self.y + point.y)
 
+    def __sub__(self, point: Point) -> Point:
+        return Point(self.x - point.x, self.y - point.y)
+
     def __mul__(self, num_: int) -> Point:
         return Point(self.x * num_, self.y * num_)
 
