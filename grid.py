@@ -99,8 +99,15 @@ class Line:
         self.start_point = start_point
         self.end_point = end_point
 
+    def __str__(self) -> str:
+        return f"{str(self.start_point)} -> {str(self.end_point)}"
+
     def __eq__(self, comparator: Line) -> bool:
         return (
-            self.comparator.start_point == self.start_point and
-            self.comparator.end_point == self.end_point
+            comparator.start_point == self.start_point and
+            comparator.end_point == self.end_point
         )
+
+    @property
+    def points(self) -> list:
+        return [self.start_point, self.end_point]

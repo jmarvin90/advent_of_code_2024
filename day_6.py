@@ -2,7 +2,7 @@
 
 import time
 import itertools
-from grid import Point, Grid
+from grid import Point, Grid, Line
 
 my_grid = Grid("puzzle_6_input_2.txt")
 
@@ -24,7 +24,7 @@ def get_next_direction(current_direction: Point) -> Point:
 def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
 
     current_point = start_point
-    path=[start_point]
+    path=[]
 
     while True:
     
@@ -40,13 +40,13 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
             direction = get_next_direction(direction)
             continue
 
-        # If we've been at that point more than twice[?]
-        if (path.count(next_point) == 2):
+        # If we're observed this move before
+        if Line(current_point, next_point) in path:
             print(f"Been here ({next_point}) too many times, mate.")
             break
 
+        path.append(Line(current_point, next_point))
         current_point = next_point
-        path.append(current_point)
 
     return path
 
@@ -61,6 +61,9 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
 
 
 output_path = traverse_from(my_grid.match_one("^"), Point(0, -1), my_grid)
+output_points = []
 
+for line in output_path:
+    output_points.extend(line.points)
 
-print(len(set(output_path)))            # PT 1 - Answer
+print(len(set(output_points)))
