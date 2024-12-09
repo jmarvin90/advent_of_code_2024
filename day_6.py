@@ -9,7 +9,7 @@ from grid import Point, Grid, Line
 # 1655
 
 obstructions=["#"]
-my_grid = Grid("puzzle_6_input_2.txt")
+my_grid = Grid("puzzle_6_input.txt")
 
 directions = [
     Point(0, -1),
@@ -24,24 +24,22 @@ def get_next_direction(current_direction: Point) -> Point:
             return directions[(index + 1) % len(directions)]
 
 
-def get_path(start_point: Point, direction: Point, grid: Grid) -> list:
+def get_path(start_point: Point, direction: Point, grid: Grid) -> Line:
     """Follow the direction from the start point to a boundary/obstacle."""
-    path = []
     current_point = start_point
 
     while True:
         next_point = current_point + direction
-        path.append(Line(current_point, next_point))
 
-        if (
-            not next_point.is_valid(grid) or 
-            grid.at(next_point) in obstructions
-        ):
+        if (not next_point.is_valid(grid)):
+            break
+
+        if grid.at(next_point) in obstructions:
             break
 
         current_point = next_point
 
-    return path
+    return Line(start_point, current_point)
         
 
 def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
@@ -52,22 +50,14 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
 
     while True:
         next_leg = get_path(current_point, direction, grid)
-        next_leg_set = set(next_leg[:-1])
+        path.append(next_leg)
+        next_leg_termination_point = next_leg.end_point + next_leg.direction
 
-        if (next_leg_set & pathset):
-            raise RecursionError("I've been there before...")
-
-        path.extend(next_leg[:-1])
-        pathset = {
-            *pathset,
-            *next_leg_set
-        }
-
-        if not next_leg[-1].end_point.is_valid(grid):
+        if not next_leg_termination_point.is_valid(grid):
             break
         
-        if grid.at(next_leg[-1].end_point) in obstructions:
-            current_point = next_leg[-1].start_point
+        if grid.at(next_leg_termination_point) in obstructions:
+            current_point = next_leg.end_point
             direction = get_next_direction(direction)
 
     return path
@@ -99,19 +89,12 @@ def get_loop_closures(path: list, grid: Grid) -> list:
 
 start_point = my_grid.match_one("^")
 start_direction = Point(0, -1)
+points = set()
 
-# cProfile.run("traverse_from(start_point, start_direction, my_grid)")
-output = traverse_from(start_point, start_direction, my_grid)
+cProfile.run("traverse_from(start_point, start_direction, my_grid)")
+output_paths = traverse_from(start_point, start_direction, my_grid)
 
-# cProfile.run("get_loop_closures(output, my_grid)")
-closures = get_loop_closures(output, my_grid)
+for path in output_paths:
+    points = points | path.points
 
-# points = []
-
-# for move in output:
-#     for point in move.points:
-#         if point not in points:
-#             points.append(point)
-
-# print(len(points))          # The answer
-print(len(set(closures)))
+print(len(points))

@@ -114,17 +114,44 @@ class Line:
             comparator.end_point == self.end_point
         )
 
-    @property
+    @functools.cached_property
+    def is_horizontal(self) -> bool:
+        return self.start_point.x != self.end_point.x
+
+    @functools.cached_property
+    def is_vertical(self) -> bool:
+        return self.start_point.y != self.end_point.y
+
+    @functools.cached_property
     def direction(self) -> Point:
         # Horizontal
-        if self.start_point.x != self.end_point.x:
+        if self.is_horizontal:
             return (
-                Point(1, 0) 
-                if self.start_point.x < self.end_point.x
-                else Point(-1, 0)
+                Point(1 if self.start_point.x < self.end_point.x else -1, 0)
             )
+
+        # Vertical
         return (
-            Point(0, 1)
-            if self.start_point.y < self.end_point.y
-            else Point(0, -1)
+            Point(0, 1 if self.start_point.y < self.end_point.y else -1)
         )
+
+    @functools.cached_property
+    def points(self) -> set:
+        if self.is_horizontal:
+            return {
+                Point(number, self.start_point.y)
+                for number in range(
+                    self.start_point.x,
+                    self.end_point.x + self.direction.x,
+                    self.direction.x
+                )
+            }
+
+        return {
+            Point(self.start_point.x, number)
+            for number in range(
+                self.start_point.y,
+                self.end_point.y + self.direction.y,
+                self.direction.y
+            )
+        }
