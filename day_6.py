@@ -1,9 +1,14 @@
 
 
+import cProfile
 import time
+import copy
 import itertools
 from grid import Point, Grid, Line
 
+# 1655
+
+obstructions=["#"]
 my_grid = Grid("puzzle_6_input_2.txt")
 
 directions = [
@@ -12,8 +17,6 @@ directions = [
     Point(0, 1),
     Point(-1, 0) 
 ]
-
-obstructions = ["#"]
 
 def get_next_direction(current_direction: Point) -> Point:
     for index, direction in enumerate(directions):
@@ -48,6 +51,10 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
 
     while True:
         next_leg = get_path(current_point, direction, grid)
+
+        if any([move in path for move in next_leg]):
+            raise RecursionError("I've been there before...")
+
         path.extend(next_leg[:-1])
 
         if not next_leg[-1].end_point.is_valid(grid):
@@ -59,13 +66,46 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
 
     return path
 
-output = traverse_from(Point(4, 6), Point(0, -1), my_grid)
+
+def get_loop_closures(path: list, grid: Grid) -> list:
+    points = []
+
+    for move in path:
+        alt_direction = get_next_direction(move.direction)
+        alt_path = get_path(move.start_point, alt_direction, grid)
+
+        if (
+            alt_path[-1].end_point.is_valid(grid) and
+            grid.at(alt_path[-1].end_point) in obstructions
+        ):
+            alt_grid = copy.deepcopy(grid)
+            alt_grid.set(move.end_point, "#")
+
+            try:
+                traverse_from(grid.match_one("^"), Point(0, -1), alt_grid)
+
+            except RecursionError:
+                print(f"Closure! {move.end_point}")
+                points.append(move.end_point)
+
+    return points
+
+
+start_point = my_grid.match_one("^")
+start_direction = Point(0, -1)
+
+# cProfile.run("traverse_from(start_point, start_direction, my_grid)")
+output = traverse_from(start_point, start_direction, my_grid)
+
+# cProfile.run("get_loop_closures(output, my_grid)")
+closures = get_loop_closures(output, my_grid)
 
 points = []
-for line in output:
-    for point in line.points:
+
+for move in output:
+    for point in move.points:
         if point not in points:
             points.append(point)
 
-print(len(points))
-
+print(len(points))          # The answer
+print(len(set(closures)))

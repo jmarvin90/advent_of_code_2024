@@ -1,4 +1,5 @@
 from __future__ import annotations
+import functools
 import itertools
 import pathlib
 import math
@@ -8,7 +9,6 @@ class Grid:
     def __init__(self, input_file: str, obstructions: list=[]):
         self.input_file = input_file
         self.grid = Grid.from_input_file(self.input_file)
-        self.obstructions=[]
 
     def __str__(self) -> str:
         return "\n".join("".join(row) for row in self.grid)
@@ -68,7 +68,7 @@ class Point:
         self.y = y
 
     def __hash__(self) -> str:
-        return hash(self.__str__())
+        return hash((self.__str__()))
 
     def __eq__(self, comparator: Point) -> bool:
         return self.x == comparator.x and self.y == comparator.y
@@ -105,6 +105,9 @@ class Line:
     def __str__(self) -> str:
         return f"{str(self.start_point)} -> {str(self.end_point)}"
 
+    def __hash__(self) -> int:
+        return hash(self.__str__)
+
     def __eq__(self, comparator: Line) -> bool:
         return (
             comparator.start_point == self.start_point and
@@ -114,3 +117,10 @@ class Line:
     @property
     def points(self) -> list:
         return [self.start_point, self.end_point]
+
+    @property
+    def direction(self) -> Point:
+        return Point(
+            self.end_point.x - self.start_point.x,
+            self.end_point.y - self.start_point.y
+        )
