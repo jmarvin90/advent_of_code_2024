@@ -115,12 +115,16 @@ class Line:
         )
 
     @property
-    def points(self) -> list:
-        return [self.start_point, self.end_point]
-
-    @property
     def direction(self) -> Point:
-        return Point(
-            self.end_point.x - self.start_point.x,
-            self.end_point.y - self.start_point.y
+        # Horizontal
+        if self.start_point.x != self.end_point.x:
+            return (
+                Point(1, 0) 
+                if self.start_point.x < self.end_point.x
+                else Point(-1, 0)
+            )
+        return (
+            Point(0, 1)
+            if self.start_point.y < self.end_point.y
+            else Point(0, -1)
         )

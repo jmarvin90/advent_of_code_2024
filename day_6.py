@@ -9,7 +9,7 @@ from grid import Point, Grid, Line
 # 1655
 
 obstructions=["#"]
-my_grid = Grid("puzzle_6_input.txt")
+my_grid = Grid("puzzle_6_input_2.txt")
 
 directions = [
     Point(0, -1),
