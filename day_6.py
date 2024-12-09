@@ -102,19 +102,17 @@ def get_closure_points(
     return closures
 
 
-
 start_point = my_grid.match_one("^")
 start_direction = Point(0, -1)
 points = set()
 
-# cProfile.run("traverse_from(start_point, start_direction, my_grid)")
 output_paths = traverse_from(start_point, start_direction, my_grid)
+# cProfile.run("get_closure_points(output_paths, my_grid, start_point, start_direction)")
+closures = get_closure_points(output_paths, my_grid, start_point, start_direction)
 
 for path in output_paths:
     points = points | path.points
 
 print(len(points))
-
-closures = get_closure_points(output_paths, my_grid, start_point, start_direction)
 print(len(closures))
 
