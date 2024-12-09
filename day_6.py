@@ -9,7 +9,7 @@ from grid import Point, Grid, Line
 # 1655
 
 obstructions=["#"]
-my_grid = Grid("puzzle_6_input_2.txt")
+my_grid = Grid("puzzle_6_input.txt")
 
 directions = [
     Point(0, -1),
@@ -48,14 +48,20 @@ def traverse_from(start_point: Point, direction: Point, grid: Grid) -> None:
     """Follow a series of paths until we leave the grid."""
     current_point = start_point
     path=[]
+    pathset = set()
 
     while True:
         next_leg = get_path(current_point, direction, grid)
+        next_leg_set = set(next_leg[:-1])
 
-        if any([move in path for move in next_leg]):
+        if (next_leg_set & pathset):
             raise RecursionError("I've been there before...")
 
         path.extend(next_leg[:-1])
+        pathset = {
+            *pathset,
+            *next_leg_set
+        }
 
         if not next_leg[-1].end_point.is_valid(grid):
             break
@@ -100,12 +106,12 @@ output = traverse_from(start_point, start_direction, my_grid)
 # cProfile.run("get_loop_closures(output, my_grid)")
 closures = get_loop_closures(output, my_grid)
 
-points = []
+# points = []
 
-for move in output:
-    for point in move.points:
-        if point not in points:
-            points.append(point)
+# for move in output:
+#     for point in move.points:
+#         if point not in points:
+#             points.append(point)
 
-print(len(points))          # The answer
+# print(len(points))          # The answer
 print(len(set(closures)))

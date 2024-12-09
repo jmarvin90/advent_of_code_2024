@@ -106,7 +106,7 @@ class Line:
         return f"{str(self.start_point)} -> {str(self.end_point)}"
 
     def __hash__(self) -> int:
-        return hash(self.__str__)
+        return hash(self.__str__())
 
     def __eq__(self, comparator: Line) -> bool:
         return (
