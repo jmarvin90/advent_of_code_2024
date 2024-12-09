@@ -6,9 +6,10 @@ import math
 
 class Grid:
     """Some helpful grid functionality."""
-    def __init__(self, input_file: str, obstructions: list=[]):
+    def __init__(self, input_file: str, obstructions: set=set()):
         self.input_file = input_file
         self.grid = Grid.from_input_file(self.input_file)
+        self.obstructions = obstructions
 
     def __str__(self) -> str:
         return "\n".join("".join(row) for row in self.grid)
@@ -59,6 +60,10 @@ class Grid:
 
     def set(self, point: Point, char: str) -> None:
         self.grid[point.y][point.x] = char
+
+    @functools.cached_property
+    def obstruction_points(self) -> set:
+        return self.match_any(self.obstructions)
 
 
 class Point:
