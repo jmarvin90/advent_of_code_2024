@@ -6,7 +6,7 @@ import copy
 import itertools
 from grid import Point, Grid, Line
 
-my_grid = Grid("puzzle_6_input_4.txt", obstructions={"#"})
+my_grid = Grid("puzzle_6_input.txt", obstructions={"#"})
 
 directions = [
     Point(0, -1),

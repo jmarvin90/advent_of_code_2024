@@ -65,6 +65,13 @@ class Grid:
     def obstruction_points(self) -> set:
         return self.match_any(self.obstructions)
 
+    @functools.cached_property
+    def distinct_vals(self) -> set:
+        vals = set()
+        for row in self.grid:
+            vals = vals | set(row)
+        return vals
+
 
 class Point:
     """Some helpful point functionality."""
@@ -102,6 +109,13 @@ class Point:
             (self.y == 0 or self.y == grid.height -1)
         )
 
+    def distance_to(self, point: Point) -> float:
+        line = Line(self, point)
+        return math.hypot(
+            line.x_diff, line.y_diff
+        )
+
+
 class Line:
     def __init__(self, start_point: Point, end_point: Point):
         self.start_point = start_point
@@ -120,12 +134,24 @@ class Line:
         )
 
     @functools.cached_property
+    def x_diff(self) -> int:
+        return self.start_point.x - self.end_point.x
+
+    @functools.cached_property
+    def y_diff(self) -> int:
+        return self.start_point.y - self.end_point.y
+
+    @functools.cached_property
+    def diff(self) -> Point:
+        return Point(self.x_diff, self.y_diff)
+
+    @functools.cached_property
     def is_horizontal(self) -> bool:
-        return self.start_point.x != self.end_point.x
+        return self.start_point.y == self.end_point.y
 
     @functools.cached_property
     def is_vertical(self) -> bool:
-        return self.start_point.y != self.end_point.y
+        return self.start_point.x == self.end_point.x
 
     @functools.cached_property
     def direction(self) -> Point:
@@ -136,9 +162,12 @@ class Line:
             )
 
         # Vertical
-        return (
-            Point(0, 1 if self.start_point.y < self.end_point.y else -1)
-        )
+        if self.is_vertical:
+            return (
+                Point(0, 1 if self.start_point.y < self.end_point.y else -1)
+            )
+
+        return Point(self.x_diff, self.y_diff)
 
     @functools.cached_property
     def points(self) -> set:
