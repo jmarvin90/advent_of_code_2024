@@ -20,21 +20,6 @@ def get_antinodes(grid: Grid, repeat: bool=False) -> set:
             Line(*pair) 
             for pair in itertools.combinations(antennas, 2)
         ]
-
-        for line in lines:
-
-            # if line.direction.x > 0:
-            #     left_dist = line.start_point.x
-            #     right_dist = grid.width - line.end_point.x
-
-            # else:
-            #     left_dist = line.end_point.x
-            #     right_dist = grid.width - line.start_point.x
-
-            # up_dist = line.start_point.y
-            # down_dist = line.end_point.y
-
-            # print(line, line.direction, left_dist, right_dist, up_dist, down_dist, sep="\t\t")
         
     return antinodes
 
