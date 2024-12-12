@@ -167,7 +167,7 @@ class Line:
                 Point(0, 1 if self.start_point.y < self.end_point.y else -1)
             )
 
-        return Point(self.x_diff, self.y_diff)
+        return self.diff
 
     @functools.cached_property
     def points(self) -> set:
