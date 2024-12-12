@@ -28,10 +28,12 @@ def get_antinodes(grid: Grid) -> set:
             for pair in itertools.combinations(antennas, 2)
         ]
 
+        # For each line, scan forwards and backwards
         for line in lines:
             forwards = step(line.start_point, line.diff, grid)
             backwards = step(line.end_point, -line.diff, grid)
 
+            # And add new antinodes to our total
             antinodes = {
                 *antinodes, 
                 *forwards, 
